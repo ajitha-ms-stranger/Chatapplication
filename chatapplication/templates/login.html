@@ -1,0 +1,106 @@
+
+{% comment %} <!DOCTYPE html>
+<html>
+<body>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="bg-white p-8 rounded-xl shadow-md w-96">
+    <h2 class="text-2xl font-bold mb-6 text-center">Login to Chat</h2>
+    <form method="POST">
+      {% csrf_token %}
+      <input type="text" name="username" placeholder="Username"
+             class="w-full mb-4 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <input type="password" name="password" placeholder="Password"
+             class="w-full mb-6 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <button type="submit"
+              class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded">
+        Login
+      </button>
+    </form>
+  </div>
+</div>
+</body>
+</html> {% endcomment %}
+
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <style>
+    /* Custom animated gradient background */
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body {
+      background: linear-gradient(-45deg,rgb(82, 137, 193),rgb(120, 79, 214),rgb(109, 148, 18),rgb(218, 124, 16));
+      background-size: 400% 400%;
+      animation: gradientMove 15s ease infinite;
+    }
+
+    .fade-in {
+      animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+        .gradient-button {
+      background: linear-gradient(-45deg, rgb(82, 137, 193), rgb(120, 79, 214), rgb(109, 148, 18), rgb(218, 124, 16));
+      background-size: 400% 400%;
+      animation: gradientMove 15s ease infinite;
+      color: white;
+    }
+
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+
+  <div class="bg-grey p-8 rounded-2xl shadow-2xl w-full max-w-md fade-in">
+    <!-- Logo -->
+    <div class="flex justify-center mb-4">
+      <img src="https://cdn-icons-png.flaticon.com/512/2462/2462719.png" alt="Chat App" class="h-12 w-12">
+
+    </div>
+
+    <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Login to Chat</h2>
+
+    {% if form.errors %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
+        Invalid credentials. Please try again.
+      </div>
+    {% endif %}
+
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
+      <input type="text" name="username" placeholder="Username"
+             class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition-all duration-200">
+      <input type="password" name="password" placeholder="Password"
+             class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition-all duration-200">
+      {% comment %} <button type="submit"
+              class="w-full bg-yellow-500 hover:bg-yellow-500 text-white font-semibold py-2 rounded shadow transition duration-300 transform hover:scale-105">
+        Login
+      </button> {% endcomment %}
+
+      <button type="submit"
+        class="w-full gradient-button text-white font-semibold py-2 rounded shadow transition duration-300 transform hover:scale-105">
+        Login</button>
+      </form>
+
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+{% comment %} <!DOCTYPE html>
+<html>
+  <body>
+    <center><h1>Hello ,  {{request.user}}</h1></center>
+    <br>
+    {% if request.user.is_authenticated  %}
+    <center> <a href = "{% url 'logout-user' %}">Logout</a></center>
+    {% endif %}
+    <div
+      class="chat__item__container"
+      id="id_chat_item_container"
+      style="font-size: 20px"
+    >
+      <br />
+      <input type="text" id="id_message_send_input" />
+      <button type="submit" id="id_message_send_button">Send Message</button>
+      <br />
+      <br />
+    </div> 
+
+    <script>
+      const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+      chatSocket.onopen = function (e) {
+        console.log("The connection was setup successfully !");
+      };
+      chatSocket.onclose = function (e) {
+        console.log("Something unexpected happened !");
+      };
+      document.querySelector("#id_message_send_input").focus();
+      document.querySelector("#id_message_send_input").onkeyup = function (e) {
+        if (e.keyCode == 13) {
+          document.querySelector("#id_message_send_button").click();
+        }
+      };
+      document.querySelector("#id_message_send_button").onclick = function (e) {
+        var messageInput = document.querySelector(
+          "#id_message_send_input"
+        ).value;
+        chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.username}}"}));
+      };
+      chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        var div = document.createElement("div");
+        div.innerHTML = data.username + " : " + data.message;
+        document.querySelector("#id_message_send_input").value = "";
+        document.querySelector("#id_chat_item_container").appendChild(div);
+      };
+    </script>
+  </body>
+</html> {% endcomment %}
+
+
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+    /* little “tail” triangle on left‑aligned bubbles */
+    .bubble-left::after {
+      content: "";
+      position: absolute;
+      left: -6px;
+      top: 10px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: transparent #f87171 transparent transparent; /* match bg-red-400 */
+    }
+    /* little “tail” triangle on right‑aligned bubbles */
+    .bubble-right::after {
+      content: "";
+      position: absolute;
+      right: -6px;
+      top: 10px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: transparent transparent transparent #93c5fd; /* match bg-blue-300 */
+    }
+  </style>
+  
+    <title>Chat Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+
+    
+    <body class="bg-cover bg-center min-h-screen flex flex-col items-center p-4 "
+        style="background-image: url('{% static 'images/bg.png' %}')">
+
+    
+
+    <h1 class="text-3xl font-extrabold bg-gradient-to-r from-pink-500 to-red-500 bg-clip-text text-transparent  drop-shadow-md">
+      Hello, {{ request.user }}
+    </h1>
+
+
+
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'logout-user' %}"
+       class="mb-6 text-yellow-500 hover:text-red-600 " style="font-size: 20px">
+      Logout
+    </a> 
+
+    {% endif %}
+
+      {% comment %} CHATBOX-SECTION {% endcomment %}
+
+    <div
+    id="id_chat_item_container"
+    class="w-full max-w-md h-96 overflow-y-auto bg-pink-100 bg-opacity-70 backdrop-blur-md p-5 rounded-xl shadow-lg  space-y-2 "
+    ></div>
+
+
+    <div class="w-full max-w-md mt-4 flex gap-2">
+      <input
+        type="text"
+        id="id_message_send_input"
+        placeholder="Type a message..."
+        class="flex-1 px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-800"
+      />
+
+      <button
+        type="submit"
+        id="id_message_send_button"
+        class="bg-purple-400 text-white px-4 py-2 rounded hover:bg-green-500 shadow"
+      >
+        Send Message
+      </button>
+    </div>
+
+
+
+
+
+    <script>
+      const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+      chatSocket.onopen = function (e) {
+        console.log("The connection was setup successfully !");
+      };
+      chatSocket.onclose = function (e) {
+        console.log("Something unexpected happened !");
+      };
+      document.querySelector("#id_message_send_input").focus();
+      document.querySelector("#id_message_send_input").onkeyup = function (e) {
+        if (e.keyCode == 13) {
+          document.querySelector("#id_message_send_button").click();
+        }
+      };
+      document.querySelector("#id_message_send_button").onclick = function (e) {
+        var messageInput = document.querySelector(
+          "#id_message_send_input"
+        ).value;
+        chatSocket.send(
+          JSON.stringify({
+            message: messageInput,
+            username: "{{ request.user.username }}",
+          })
+        );
+      };
+    
+chatSocket.onmessage = function (e) {
+  const data = JSON.parse(e.data);
+  const currentUser = "{{ request.user.username }}";
+  const isSender = data.username === currentUser;
+
+  // outer flex wrapper
+  const messageDiv = document.createElement("div");
+  messageDiv.className = `flex ${isSender ? "justify-end" : "justify-start"}`;
+
+  // actual bubble
+  const bubble = document.createElement("div");
+  bubble.className = `relative max-w-xs px-4 py-2 rounded-md shadow text-white
+                      ${isSender ? "bg-pink-400 bubble-right" : "bg-pink-600 bubble-left"}`;
+
+  bubble.innerHTML = `
+      <span class="text-xs font-semibold block ${
+        isSender ? "text-right" : "text-left"
+      }">${isSender ? "You" : data.username}</span>
+      <span class="block break-words text-[10px]">${data.message}</span>
+
+      <span class="block text-xs opacity-70  ${
+        isSender ? "text-right" : "text-left"
+      }">${new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span>
+  `;
+
+  messageDiv.appendChild(bubble);
+  const container = document.getElementById("id_chat_item_container");
+  container.appendChild(messageDiv);
+
+  // clear the input + autoscroll
+  document.getElementById("id_message_send_input").value = "";
+  container.scrollTop = container.scrollHeight;
+};
+
+
+    </script>
+  </body>
+</html>
